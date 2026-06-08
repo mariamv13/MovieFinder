@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="src/assets/logo-moviefinder.png" width="120" alt="MovieFinder Logo" />
+<img src="src/assets/logo-fondo.png" width="120" alt="MovieFinder Logo" />
 
 # MovieFinder
 
