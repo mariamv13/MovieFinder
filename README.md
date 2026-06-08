@@ -1,16 +1,70 @@
-# React + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<img src="src/assets/logo-moviefinder.png" width="120" alt="MovieFinder Logo" />
 
-Currently, two official plugins are available:
+# MovieFinder
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**Descubre películas con React y la API de TMDB.**
 
-## React Compiler
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/es/docs/Web/JavaScript)
+[![TMDB](https://img.shields.io/badge/TMDB-API-01B4E4?style=flat&logo=themoviedatabase&logoColor=white)](https://themoviedb.org)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+</div>
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## ¿Qué es MovieFinder?
+
+Aplicación web para explorar y buscar películas usando la API de TMDB. Desarrollada para aprender React partiendo de conocimientos de JavaScript vanilla.
+
+---
+
+## Funcionalidades
+
+- 🔍 Búsqueda de películas en tiempo real
+- 🔥 Sección de películas populares
+- ⭐ Mejor valoradas
+- 🎬 Próximos estrenos con fecha completa
+- 🎞️ Página de detalle con backdrop, géneros y sinopsis
+
+---
+
+## Stack
+
+| Tecnología | Uso |
+|---|---|
+| React 18 | Framework de UI |
+| Vite | Bundler y entorno de desarrollo |
+| React Router | Navegación entre páginas |
+| Axios | Llamadas a la API |
+| TMDB API | Fuente de datos cinematográficos |
+
+---
+
+## Instalación local
+
+```bash
+# 1. Clona el repositorio
+git clone https://github.com/mariamv13/moviefinder.git
+cd moviefinder
+
+# 2. Instala las dependencias
+npm install
+
+# 3. Crea el archivo .env con tu API key de TMDB
+cp .env.example .env
+# Edita .env y añade tu clave
+
+# 4. Arranca el servidor de desarrollo
+npm run dev
+```
+
+Accede a `http://localhost:5173`
+
+---
+
+## Autora
+
+**María Martín Vélez** · [GitHub](https://github.com/mariamv13) · [LinkedIn](https://www.linkedin.com/in/maría-martín-vélez-50001b40a/)
