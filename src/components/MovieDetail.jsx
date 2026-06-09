@@ -6,20 +6,51 @@ const API_KEY = import.meta.env.VITE_TMDB_API_KEY
 const BASE_URL = 'https://api.themoviedb.org/3'
 const IMG_BASE = 'https://image.tmdb.org/t/p/w500'
 const BACKDROP_BASE = 'https://image.tmdb.org/t/p/w1280'
+const PROFILE_BASE = 'https://image.tmdb.org/t/p/w185'
+const POSTER_BASE = 'https://image.tmdb.org/t/p/w300'
 
 function MovieDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [movie, setMovie] = useState(null)
+  const [cast, setCast] = useState([])
+  const [similar, setSimilar] = useState([])
+  const [trailerKey, setTrailerKey] = useState(null)
+  const [showTrailer, setShowTrailer] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchMovie = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/movie/${id}`, {
-          params: { api_key: API_KEY, language: 'es-ES' }
-        })
-        setMovie(res.data)
+        const [movieRes, creditsRes, similarRes, videosRes] = await Promise.all([
+          axios.get(`${BASE_URL}/movie/${id}`, {
+            params: { api_key: API_KEY, language: 'es-ES' }
+          }),
+          axios.get(`${BASE_URL}/movie/${id}/credits`, {
+            params: { api_key: API_KEY, language: 'es-ES' }
+          }),
+          axios.get(`${BASE_URL}/movie/${id}/similar`, {
+            params: { api_key: API_KEY, language: 'es-ES' }
+          }),
+          axios.get(`${BASE_URL}/movie/${id}/videos`, {
+            params: { api_key: API_KEY, language: 'es-ES' }
+          })
+        ])
+        setMovie(movieRes.data)
+        setCast(creditsRes.data.cast.slice(0, 10))
+        setSimilar(similarRes.data.results.slice(0, 6))
+
+        // Busca tráiler en español, si no hay busca en inglés
+        const videos = videosRes.data.results
+        let trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+        if (!trailer) {
+          const videosEn = await axios.get(`${BASE_URL}/movie/${id}/videos`, {
+            params: { api_key: API_KEY }
+          })
+          trailer = videosEn.data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube')
+        }
+        if (trailer) setTrailerKey(trailer.key)
+
       } catch (error) {
         console.error('Error al cargar la película:', error)
       } finally {
@@ -27,7 +58,8 @@ function MovieDetail() {
       }
     }
 
-    fetchMovie()
+    fetchData()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [id])
 
   if (loading) return <p className="loading">Cargando...</p>
@@ -67,9 +99,80 @@ function MovieDetail() {
               ))}
             </div>
             <p className="overview">{movie.overview}</p>
+            {trailerKey && (
+              <button className="trailer-btn" onClick={() => setShowTrailer(true)}>
+                ▶ Ver tráiler
+              </button>
+            )}
           </div>
         </div>
+
+        {cast.length > 0 && (
+          <div className="cast-section">
+            <h2 className="cast-title">Reparto</h2>
+            <div className="cast-grid">
+              {cast.map(actor => (
+                <div key={actor.id} className="cast-card">
+                  {actor.profile_path ? (
+                    <img
+                      src={`${PROFILE_BASE}${actor.profile_path}`}
+                      alt={actor.name}
+                    />
+                  ) : (
+                    <div className="no-profile">👤</div>
+                  )}
+                  <div className="cast-info">
+                    <span className="cast-name">{actor.name}</span>
+                    <span className="cast-character">{actor.character}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {similar.length > 0 && (
+          <div className="similar-section">
+            <h2 className="cast-title">Películas similares</h2>
+            <div className="similar-grid">
+              {similar.map(movie => (
+                <div
+                  key={movie.id}
+                  className="similar-card"
+                  onClick={() => navigate(`/movie/${movie.id}`)}
+                >
+                  {movie.poster_path ? (
+                    <img
+                      src={`${POSTER_BASE}${movie.poster_path}`}
+                      alt={movie.title}
+                    />
+                  ) : (
+                    <div className="no-poster">Sin imagen</div>
+                  )}
+                  <div className="similar-info">
+                    <span className="similar-title">{movie.title}</span>
+                    <span className="similar-year">{movie.release_date?.slice(0, 4)}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {showTrailer && (
+        <div className="trailer-modal" onClick={() => setShowTrailer(false)}>
+          <div className="trailer-content" onClick={e => e.stopPropagation()}>
+            <button className="trailer-close" onClick={() => setShowTrailer(false)}>✕</button>
+            <iframe
+              src={`https://www.youtube.com/embed/${trailerKey}?autoplay=1`}
+              title="Tráiler"
+              allowFullScreen
+              allow="autoplay"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

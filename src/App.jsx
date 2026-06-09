@@ -4,6 +4,7 @@ import { Routes, Route } from 'react-router-dom'
 import SearchBar from './components/SearchBar'
 import MovieGrid from './components/MovieGrid'
 import MovieDetail from './components/MovieDetail'
+import Pagination from './components/Pagination'
 import logo from './assets/logo-moviefinder.png'
 import './App.css'
 
@@ -21,33 +22,36 @@ function App() {
   const [movies, setMovies] = useState([])
   const [loading, setLoading] = useState(false)
   const [activeSection, setActiveSection] = useState('popular')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     if (query.trim() !== '') return
-    fetchSection(activeSection)
-  }, [activeSection])
+    fetchSection(activeSection, currentPage)
+  }, [activeSection, currentPage])
 
   useEffect(() => {
     if (query.trim() === '') {
-      fetchSection(activeSection)
+      fetchSection(activeSection, 1)
       return
     }
 
     const delay = setTimeout(() => {
-      searchMovies(query)
+      searchMovies(query, 1)
     }, 500)
 
     return () => clearTimeout(delay)
   }, [query])
 
-  const fetchSection = async (sectionKey) => {
+  const fetchSection = async (sectionKey, page) => {
     const section = SECTIONS.find(s => s.key === sectionKey)
     setLoading(true)
     try {
       const res = await axios.get(`${BASE_URL}${section.endpoint}`, {
-        params: { api_key: API_KEY, language: 'es-ES', page: 1 }
+        params: { api_key: API_KEY, language: 'es-ES', page }
       })
       setMovies(res.data.results)
+      setTotalPages(Math.min(res.data.total_pages, 500))
     } catch (error) {
       console.error('Error al cargar sección:', error)
     } finally {
@@ -55,13 +59,14 @@ function App() {
     }
   }
 
-  const searchMovies = async (q) => {
+  const searchMovies = async (q, page = currentPage) => {
     setLoading(true)
     try {
       const res = await axios.get(`${BASE_URL}/search/movie`, {
-        params: { api_key: API_KEY, language: 'es-ES', query: q }
+        params: { api_key: API_KEY, language: 'es-ES', query: q, page }
       })
       setMovies(res.data.results)
+      setTotalPages(Math.min(res.data.total_pages, 500))
     } catch (error) {
       console.error('Error al buscar películas:', error)
     } finally {
@@ -71,7 +76,13 @@ function App() {
 
   const handleSectionChange = (key) => {
     setActiveSection(key)
+    setCurrentPage(1)
     setQuery('')
+  }
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -97,7 +108,14 @@ function App() {
             {loading ? (
               <p className="loading">Cargando...</p>
             ) : (
-              <MovieGrid movies={movies} activeSection={activeSection} />
+              <>
+                <MovieGrid movies={movies} activeSection={activeSection} />
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </>
             )}
           </main>
         </div>
