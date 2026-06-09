@@ -35,7 +35,7 @@ body {
   margin-bottom: 1.5rem;
   border-radius: 999px;
   border: 2px solid #333;
-  border-color: #a91219;
+  border-color: #ca881d;
   background-color: #1a1a1a;
   color: #fff;
   font-size: 1rem;
@@ -44,7 +44,7 @@ body {
 }
 
 .search-bar input:focus {
-  border-color: #e50914;
+  border-color: #f4ac3a;
 }
 
 .movie-grid {
@@ -211,6 +211,24 @@ body {
   font-size: 1.2rem;
   max-width: 600px;
   margin-top: 0.5rem;
+}
+
+.movie-extra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.movie-extra p {
+  font-size: 0.95rem;
+  color: #ddd;
+}
+
+.extra-label {
+  color: #F5A623;
+  font-weight: 600;
+  margin-right: 0.5rem;
 }
 
 .section-nav {
@@ -402,20 +420,21 @@ body {
 /* --------- TRÁILER --------- */
 
 .trailer-btn {
-  background-color: #F5A623;
+  background-color: #b20f17;
   color: #fff;
   border: none;
   padding: 0.6rem 1.5rem;
   border-radius: 999px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
   align-self: flex-start;
   margin-top: 0.5rem;
 }
 
 .trailer-btn:hover {
   background-color: #b20f17;
+  transform: scale(1.05);
 }
 
 .trailer-modal {
@@ -456,4 +475,40 @@ body {
 
 .trailer-close:hover {
   color: #e50914;
+}
+
+/* --------- EFECTOS --------- */
+
+/* Fade in en la página de detalle */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.detail-content {
+  animation: fadeIn 0.6s ease forwards;
+}
+
+.cast-section {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+.similar-section {
+  animation: fadeIn 1s ease forwards;
+}
+
+/* Cambiar de sección */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.movie-grid {
+  animation: fadeInUp 0.4s ease forwards;
 }

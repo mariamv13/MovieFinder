@@ -109,7 +109,7 @@ function App() {
               <p className="loading">Cargando...</p>
             ) : (
               <>
-                <MovieGrid movies={movies} activeSection={activeSection} />
+                <MovieGrid movies={movies} activeSection={activeSection} key={activeSection} />
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}

@@ -14,6 +14,7 @@ function MovieDetail() {
   const navigate = useNavigate()
   const [movie, setMovie] = useState(null)
   const [cast, setCast] = useState([])
+  const [crew, setCrew] = useState({})
   const [similar, setSimilar] = useState([])
   const [trailerKey, setTrailerKey] = useState(null)
   const [showTrailer, setShowTrailer] = useState(false)
@@ -36,11 +37,16 @@ function MovieDetail() {
             params: { api_key: API_KEY, language: 'es-ES' }
           })
         ])
+
         setMovie(movieRes.data)
         setCast(creditsRes.data.cast.slice(0, 10))
+
+        const directors = creditsRes.data.crew.filter(c => c.job === 'Director')
+        const writers = creditsRes.data.crew.filter(c => c.job === 'Screenplay' || c.job === 'Writer' || c.job === 'Story')
+        setCrew({ directors, writers })
+
         setSimilar(similarRes.data.results.slice(0, 6))
 
-        // Busca tráiler en español, si no hay busca en inglés
         const videos = videosRes.data.results
         let trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube')
         if (!trailer) {
@@ -99,6 +105,20 @@ function MovieDetail() {
               ))}
             </div>
             <p className="overview">{movie.overview}</p>
+            <div className="movie-extra">
+              {crew.directors?.length > 0 && (
+                <p><span className="extra-label">Dirección</span> {crew.directors.map(d => d.name).join(', ')}</p>
+              )}
+              {crew.writers?.length > 0 && (
+                <p><span className="extra-label">Guión</span> {crew.writers.map(w => w.name).join(', ')}</p>
+              )}
+              {movie.production_countries?.length > 0 && (
+                <p><span className="extra-label">País</span> {movie.production_countries.map(c => c.name).join(', ')}</p>
+              )}
+              {movie.production_companies?.length > 0 && (
+                <p><span className="extra-label">Productora</span> {movie.production_companies.map(c => c.name).join(', ')}</p>
+              )}
+            </div>
             {trailerKey && (
               <button className="trailer-btn" onClick={() => setShowTrailer(true)}>
                 ▶ Ver tráiler
