@@ -6,24 +6,25 @@ import MovieGrid from './components/MovieGrid'
 import MovieDetail from './components/MovieDetail'
 import Pagination from './components/Pagination'
 import logo from './assets/logo-moviefinder.png'
+import type { Movie, MoviesResponse, Section } from './types/tmdb'
 import './App.css'
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY
 const BASE_URL = 'https://api.themoviedb.org/3'
 
-const SECTIONS = [
+const SECTIONS: Section[] = [
   { key: 'popular', label: '🔥 Populares', endpoint: '/movie/popular' },
   { key: 'top_rated', label: '⭐ Mejor valoradas', endpoint: '/movie/top_rated' },
   { key: 'upcoming', label: '🗓️ Próximos estrenos', endpoint: '/movie/upcoming' },
 ]
 
 function App() {
-  const [query, setQuery] = useState('')
-  const [movies, setMovies] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [activeSection, setActiveSection] = useState('popular')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [totalPages, setTotalPages] = useState(1)
+  const [query, setQuery] = useState<string>('')
+  const [movies, setMovies] = useState<Movie[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  const [activeSection, setActiveSection] = useState<string>('popular')
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [totalPages, setTotalPages] = useState<number>(1)
 
   useEffect(() => {
     if (query.trim() !== '') return
@@ -43,11 +44,13 @@ function App() {
     return () => clearTimeout(delay)
   }, [query])
 
-  const fetchSection = async (sectionKey, page) => {
+  const fetchSection = async (sectionKey: string, page: number): Promise<void> => {
     const section = SECTIONS.find(s => s.key === sectionKey)
+    if (!section) return // con noUncheckedIndexedAccess/strict, find() puede devolver undefined
+
     setLoading(true)
     try {
-      const res = await axios.get(`${BASE_URL}${section.endpoint}`, {
+      const res = await axios.get<MoviesResponse>(`${BASE_URL}${section.endpoint}`, {
         params: { api_key: API_KEY, language: 'es-ES', page }
       })
       setMovies(res.data.results)
@@ -59,10 +62,10 @@ function App() {
     }
   }
 
-  const searchMovies = async (q, page = currentPage) => {
+  const searchMovies = async (q: string, page: number = currentPage): Promise<void> => {
     setLoading(true)
     try {
-      const res = await axios.get(`${BASE_URL}/search/movie`, {
+      const res = await axios.get<MoviesResponse>(`${BASE_URL}/search/movie`, {
         params: { api_key: API_KEY, language: 'es-ES', query: q, page }
       })
       setMovies(res.data.results)
@@ -74,13 +77,13 @@ function App() {
     }
   }
 
-  const handleSectionChange = (key) => {
+  const handleSectionChange = (key: string): void => {
     setActiveSection(key)
     setCurrentPage(1)
     setQuery('')
   }
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number): void => {
     setCurrentPage(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }

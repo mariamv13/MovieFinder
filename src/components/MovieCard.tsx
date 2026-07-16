@@ -1,10 +1,16 @@
 import { useNavigate } from 'react-router-dom'
+import type { Movie } from '../types/tmdb'
 
-function MovieCard({ movie, activeSection }) {
+interface MovieCardProps {
+  movie: Movie
+  activeSection: string
+}
+
+function MovieCard({ movie, activeSection }: MovieCardProps) {
   const navigate = useNavigate()
   const imgBase = 'https://image.tmdb.org/t/p/w300'
 
-  const formatDate = (dateStr) => {
+  const formatDate = (dateStr: string): string => {
     if (!dateStr) return ''
     const date = new Date(dateStr)
     return date.toLocaleDateString('es-ES', {

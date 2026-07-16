@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import type {
+  MovieDetails,
+  CastMember,
+  CrewInfo,
+  Movie,
+  CreditsResponse,
+  VideosResponse
+} from '../types/tmdb'
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY
 const BASE_URL = 'https://api.themoviedb.org/3'
@@ -10,30 +18,30 @@ const PROFILE_BASE = 'https://image.tmdb.org/t/p/w185'
 const POSTER_BASE = 'https://image.tmdb.org/t/p/w300'
 
 function MovieDetail() {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [movie, setMovie] = useState(null)
-  const [cast, setCast] = useState([])
-  const [crew, setCrew] = useState({})
-  const [similar, setSimilar] = useState([])
-  const [trailerKey, setTrailerKey] = useState(null)
-  const [showTrailer, setShowTrailer] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [movie, setMovie] = useState<MovieDetails | null>(null)
+  const [cast, setCast] = useState<CastMember[]>([])
+  const [crew, setCrew] = useState<CrewInfo>({ directors: [], writers: [] })
+  const [similar, setSimilar] = useState<Movie[]>([])
+  const [trailerKey, setTrailerKey] = useState<string | null>(null)
+  const [showTrailer, setShowTrailer] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       try {
         const [movieRes, creditsRes, similarRes, videosRes] = await Promise.all([
-          axios.get(`${BASE_URL}/movie/${id}`, {
+          axios.get<MovieDetails>(`${BASE_URL}/movie/${id}`, {
             params: { api_key: API_KEY, language: 'es-ES' }
           }),
-          axios.get(`${BASE_URL}/movie/${id}/credits`, {
+          axios.get<CreditsResponse>(`${BASE_URL}/movie/${id}/credits`, {
             params: { api_key: API_KEY, language: 'es-ES' }
           }),
-          axios.get(`${BASE_URL}/movie/${id}/similar`, {
+          axios.get<{ results: Movie[] }>(`${BASE_URL}/movie/${id}/similar`, {
             params: { api_key: API_KEY, language: 'es-ES' }
           }),
-          axios.get(`${BASE_URL}/movie/${id}/videos`, {
+          axios.get<VideosResponse>(`${BASE_URL}/movie/${id}/videos`, {
             params: { api_key: API_KEY, language: 'es-ES' }
           })
         ])
@@ -42,7 +50,9 @@ function MovieDetail() {
         setCast(creditsRes.data.cast.slice(0, 10))
 
         const directors = creditsRes.data.crew.filter(c => c.job === 'Director')
-        const writers = creditsRes.data.crew.filter(c => c.job === 'Screenplay' || c.job === 'Writer' || c.job === 'Story')
+        const writers = creditsRes.data.crew.filter(c =>
+          c.job === 'Screenplay' || c.job === 'Writer' || c.job === 'Story'
+        )
         setCrew({ directors, writers })
 
         setSimilar(similarRes.data.results.slice(0, 6))
@@ -50,7 +60,7 @@ function MovieDetail() {
         const videos = videosRes.data.results
         let trailer = videos.find(v => v.type === 'Trailer' && v.site === 'YouTube')
         if (!trailer) {
-          const videosEn = await axios.get(`${BASE_URL}/movie/${id}/videos`, {
+          const videosEn = await axios.get<VideosResponse>(`${BASE_URL}/movie/${id}/videos`, {
             params: { api_key: API_KEY }
           })
           trailer = videosEn.data.results.find(v => v.type === 'Trailer' && v.site === 'YouTube')
@@ -106,10 +116,10 @@ function MovieDetail() {
             </div>
             <p className="overview">{movie.overview}</p>
             <div className="movie-extra">
-              {crew.directors?.length > 0 && (
+              {crew.directors.length > 0 && (
                 <p><span className="extra-label">Dirección</span> {crew.directors.map(d => d.name).join(', ')}</p>
               )}
-              {crew.writers?.length > 0 && (
+              {crew.writers.length > 0 && (
                 <p><span className="extra-label">Guión</span> {crew.writers.map(w => w.name).join(', ')}</p>
               )}
               {movie.production_countries?.length > 0 && (
