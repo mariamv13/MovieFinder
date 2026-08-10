@@ -58,6 +58,37 @@ El proyecto nació en JavaScript y fue migrado componente a componente a TypeScr
 
 ---
 
+## 🧪 Testing
+
+El proyecto cuenta con una suite de tests unitarios y de integración con **Vitest** y **React Testing Library**
+
+| Componente | Tipo de test |
+|---|---|
+| `SearchBar` | Unitario |
+| `Pagination` | Unitario |
+| `MovieCard` | Unitario |
+| `MovieGrid` | Unitario |
+| `MovieDetail` | Unitario (con mock de Axios y React Router) |
+
+**Decisiones destacadas:**
+
+- **Mocks aislados por endpoint**: en `MovieDetail` y `App`, `axios.get` se mockea distinguiendo la respuesta según la URL solicitada (detalle, créditos, similares, vídeos), en vez de un mock genérico único.
+- **Tests de integración reales**: `App.test.tsx` no mockea los componentes hijos (`SearchBar`, `MovieGrid`, `Pagination`); los renderiza de verdad para comprobar el flujo completo tal y como lo vive el usuario.
+- **Fake timers para el debounce**: la búsqueda espera 500ms antes de lanzar la petición; los tests usan `vi.useFakeTimers()` para simular ese tiempo sin ralentizar la suite.
+- **Navegación mockeada de forma aislada**: `useNavigate` se mockea con `vi.hoisted()` para verificar redirecciones (por ejemplo, al hacer clic en una película similar) sin depender del router real.
+
+### Ejecutar los tests
+
+```bash
+npm run test
+
+npm run test:watch
+
+npm run test:coverage
+```
+
+---
+
 ## Instalación local
 
 ```bash
