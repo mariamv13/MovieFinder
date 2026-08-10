@@ -23,11 +23,11 @@ Aplicación web para explorar y buscar películas usando la API de TMDB. Empezó
 
 ## Funcionalidades
 
-- 🔍 Búsqueda de películas en tiempo real
-- 🔥 Sección de películas populares
-- ⭐ Mejor valoradas
-- 🎬 Próximos estrenos con fecha completa
-- 🎞️ Página de detalle con backdrop, reparto, géneros y sinopsis
+- Búsqueda de películas en tiempo real
+- Sección de películas populares
+- Mejor valoradas
+- Próximos estrenos con fecha completa
+- Página de detalle con backdrop, reparto, géneros y sinopsis
 
 ---
 
