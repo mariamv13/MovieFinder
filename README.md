@@ -19,6 +19,8 @@
 
 Aplicación web para explorar y buscar películas usando la API de TMDB. Empezó como proyecto para aprender React partiendo de JavaScript vanilla, y más adelante fue migrada íntegramente a TypeScript con modo estricto activado.
 
+### [🔗 Ver demo en vivo](https://movie-finder-dun-nine.vercel.app/)
+
 ---
 
 ## Funcionalidades
